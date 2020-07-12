@@ -1,0 +1,62 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\node\Entity\NodeType;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function pseudo_field_entity_extra_field_info() {
+  $extra = [];
+
+  // Add extra field for all node bundles.
+  foreach (NodeType::loadMultiple() as $bundle) {
+    $extra['node'][$bundle->Id()]['display']['link_specifications'] = [
+      'label' => t('Link for all specifications'),
+      'description' => t('Pseudo-field for bookmark link'),
+      'weight' => 100,
+      'visible' => TRUE,
+    ];
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function pseudo_field_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($view_mode === 'full') {
+    if ($display->getComponent('link_specifications')) {
+      // Get value from config.
+      $config = \Drupal::config('pseudo_field.config_url');
+      $url_bookmark = $config->get('bookmark');
+      // Set default value.
+      if (empty($url_bookmark)) {
+        $url_bookmark = '#edit-group-characteristics';
+      }
+      // 'internal:#edit-group-characteristics' need via bookmark link.
+      // Url for internal link.
+      $url = 'internal:' . $url_bookmark;
+      // Generate link(drupal way).
+      $link = Link::fromTextAndUrl('All characteristics >>>',
+        Url::fromUri($url));
+      // Render array.
+      $render_link = $link->toRenderable();
+      // Add class to array
+      $render_link['#attributes'] = [
+        'class' => [
+          'links-all-specifications',
+        ],
+        'rel' => 'nofollow', // Should not influence the ranking of the link's target.
+      ];
+      // Attach js library.
+      $render_link['#attached']['library'][] = 'pseudo_field/for_field_group';
+      // Pass for build.
+      $build['link_specifications'] = $render_link;
+    }
+  }
+}

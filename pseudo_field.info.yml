@@ -1,0 +1,8 @@
+name: 'Pseudo field'
+description: 'Add pseudo field(Bookmark link) to node'
+core: 8.x
+type: module
+package: Custom
+configure: pseudo_field.config_url_form
+dependencies:
+  - field_group

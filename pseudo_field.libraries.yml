@@ -1,0 +1,6 @@
+for_field_group:
+  js:
+    js/custom.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once

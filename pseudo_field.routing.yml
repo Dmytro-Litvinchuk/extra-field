@@ -1,0 +1,9 @@
+pseudo_field.config_url_form:
+  path: '/admin/config/pseudo_field'
+  defaults:
+    _form: '\Drupal\pseudo_field\Form\ConfigUrlForm'
+    _title: 'Config anchor link'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
